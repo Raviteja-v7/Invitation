@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're Invited! 🌊</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #fce4ec, #f8bbd0, #f48fb1);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating bubbles background */
+        .bubbles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+        }
+
+        #main-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #success-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #c2185b;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: pulse 2s ease-in-out infinite;
+            line-height: 1.3;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .bear-container {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .bear-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: all 0.3s ease;
+            border-radius: 20px;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .bear-container.happy img {
+            animation: wiggle 0.5s ease-in-out infinite;
+        }
+
+        .bear-container.sad img {
+            animation: none;
+            filter: saturate(0.7);
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            min-height: 80px;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #66bb6a, #43a047);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.5rem;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            z-index: 2;
+            transform-origin: center center;
+        }
+
+        .btn-yes:hover {
+            box-shadow: 0 8px 30px rgba(76, 175, 80, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #ef5350, #e53935);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 500;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+            white-space: nowrap;
+            z-index: 3;
+            position: relative;
+        }
+
+        .event-details {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #ad1457;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+            padding: 10px 24px;
+            border-radius: 12px;
+            margin-top: 5px;
+        }
+
+        .event-details span {
+            font-weight: 700;
+        }
+
+        .btn-no:hover {
+            opacity: 0.9;
+        }
+
+        .success-event-details {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #ad1457;
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(10px);
+            padding: 14px 30px;
+            border-radius: 14px;
+            margin-top: 15px;
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+
+        .success-event-details span {
+            font-weight: 700;
+        }
+
+        /* Success screen */
+        .success-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #c2185b;
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .success-image {
+            width: 280px;
+            height: 280px;
+            object-fit: contain;
+            animation: celebrationBounce 1s ease-in-out infinite;
+            border-radius: 20px;
+        }
+
+        @keyframes celebrationBounce {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.05) rotate(-3deg); }
+            75% { transform: scale(1.05) rotate(3deg); }
+        }
+
+        .success-subtitle {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #ad1457;
+        }
+
+        /* Confetti */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            top: -20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Hearts float animation for success */
+        .floating-heart {
+            position: fixed;
+            font-size: 1.5rem;
+            animation: heartFloat 3s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes heartFloat {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateY(-20px) scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        /* Wave emojis decoration */
+        .wave-decoration {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            font-size: 2rem;
+            text-align: center;
+            letter-spacing: 10px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .question {
+                font-size: 1.6rem;
+            }
+            .btn-yes {
+                padding: 14px 32px;
+                font-size: 1.3rem;
+            }
+            .bear-container {
+                width: 150px;
+                height: 150px;
+            }
+            .success-title {
+                font-size: 1.8rem;
+            }
+            .success-image {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating bubbles -->
+    <div class="bubbles" id="bubbles"></div>
+
+    <!-- Wave decoration -->
+    <div class="wave-decoration">🌊🏖️🌊🏖️🌊🏖️🌊🏖️🌊🏖️🌊🏖️🌊🏖️🌊</div>
+
+    <div class="container">
+        <!-- Main invitation screen -->
+        <div id="main-screen">
+            <h1 class="question">Will you come to Shoreline with us, Professor? 🌊</h1>
+            
+            <div class="bear-container happy" id="bear-container">
+                <img src="images/bear_happy.png" alt="Cute bear" id="bear-image">
+            </div>
+
+            <div class="buttons" id="buttons">
+                <button class="btn-yes" id="btn-yes" onclick="sayYes()">Yes!</button>
+                <button class="btn-no" id="btn-no" onmouseenter="handleNoHover()" onclick="sayNo()">No</button>
+            </div>
+        </div>
+
+        <!-- Success screen -->
+        <div id="success-screen">
+            <h1 class="success-title" id="success-title">Knew you'd say yes! 🎉</h1>
+            <img src="images/bears_celebrating.png" alt="Celebrating bears" class="success-image">
+            <p class="success-subtitle" id="success-subtitle">See you at Shoreline, Professor! 🏖️💕</p>
+            <div class="success-event-details">📅 <span>April 23rd</span> &nbsp;•&nbsp; 🕒 <span>3:51 PM – 3:54 PM</span><br>📍 <span>In front of Mail Building</span></div>
+        </div>
+    </div>
+
+    <!-- Confetti container -->
+    <div class="confetti-container" id="confetti-container"></div>
+
+    <script>
+        // State
+        let noClickCount = 0;
+        let hoverCount = 0;
+        let yesScale = 1;
+        let isDodging = false;
+        const DODGE_AFTER_CLICKS = 7;
+        const MAX_YES_SCALE = 2.8;
+
+        // No button messages - themed for inviting professor to Shoreline
+        const noMessages = [
+            "Are you sure?",
+            "Really sure? 🥺",
+            "But Professor, please! 🙏",
+            "Think about it... 🌅",
+            "We'll bring snacks! 🍕",
+            "C'mon, it'll be fun! 🎉",
+            "We promise no assignments talk!",
+            "The waves are calling! 🌊",
+            "We'll be really sad... 😢",
+            "Pretty please, Professor! 😭",
+            "We'll give you an A+ review! ⭐",
+            "Everyone's coming! 🎊",
+            "You're breaking our hearts ;(",
+            "LAST CHANCE! 😭🌊"
+        ];
+
+        // Bear images for different states
+        const bearImages = {
+            happy: "images/bear_happy.png",
+            pleading: "images/bear_pleading.png",
+            sad: "images/bear_sad.png"
+        };
+
+        // Update the bear image based on total interactions
+        function updateBear(total) {
+            const bearContainer = document.getElementById('bear-container');
+            const bearImage = document.getElementById('bear-image');
+            if (total <= 3) {
+                bearImage.src = bearImages.pleading;
+                bearContainer.className = 'bear-container';
+                bearContainer.style.animation = '';
+            } else if (total <= 5) {
+                bearImage.src = bearImages.pleading;
+                bearContainer.className = 'bear-container';
+                bearContainer.style.animation = 'wiggle 0.3s ease-in-out infinite';
+            } else {
+                bearImage.src = bearImages.sad;
+                bearContainer.className = 'bear-container sad';
+                bearContainer.style.animation = 'none';
+            }
+        }
+
+        // Dodge the No button to a random position on hover + update message
+        function handleNoHover() {
+            if (!isDodging) return;
+            const btnNo = document.getElementById('btn-no');
+
+            // Advance message on each hover dodge
+            hoverCount++;
+            const totalInteractions = noClickCount + hoverCount;
+            const messageIndex = Math.min(totalInteractions, noMessages.length - 1);
+            btnNo.textContent = noMessages[messageIndex];
+
+            // Update bear on hover too
+            updateBear(totalInteractions);
+
+            // Move to random position — keep fully inside viewport
+            const padding = 80;
+            const btnWidth = btnNo.offsetWidth || 150;
+            const btnHeight = btnNo.offsetHeight || 50;
+            const maxX = window.innerWidth - btnWidth - padding;
+            const maxY = window.innerHeight - btnHeight - padding;
+            const safeX = Math.max(padding, Math.random() * maxX);
+            const safeY = Math.max(padding, Math.random() * maxY);
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = safeX + 'px';
+            btnNo.style.top = safeY + 'px';
+            btnNo.style.transform = 'none';
+            btnNo.style.transition = 'none';
+        }
+
+        function sayNo() {
+            noClickCount++;
+
+            const btnYes = document.getElementById('btn-yes');
+            const btnNo = document.getElementById('btn-no');
+
+            // Grow the Yes button (only until dodging starts)
+            if (!isDodging) {
+                yesScale += 0.25;
+                yesScale = Math.min(yesScale, MAX_YES_SCALE);
+                btnYes.style.transform = `scale(${yesScale})`;
+
+                // Push No button to the right to prevent overlap (translateX keeps Yes centered)
+                const offset = noClickCount * 40;
+                btnNo.style.transform = `translateX(${offset}px)`;
+            }
+            
+            // Change No button text
+            const totalInteractions = noClickCount + hoverCount;
+            const messageIndex = Math.min(totalInteractions, noMessages.length - 1);
+            btnNo.textContent = noMessages[messageIndex];
+
+            // Update bear
+            updateBear(totalInteractions);
+
+            // Start dodging after DODGE_AFTER_CLICKS clicks
+            if (noClickCount >= DODGE_AFTER_CLICKS && !isDodging) {
+                isDodging = true;
+                btnNo.style.marginLeft = '0';
+                // Immediately dodge
+                handleNoHover();
+            }
+        }
+
+        function sayYes() {
+            // Stop background music
+            stopBgMusic();
+
+            // Hide main screen, show success
+            document.getElementById('main-screen').style.display = 'none';
+            const successScreen = document.getElementById('success-screen');
+            successScreen.style.display = 'flex';
+            
+            // Launch confetti
+            launchConfetti();
+            
+            // Add floating hearts
+            addFloatingHearts();
+
+            // Play celebration sound
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                playNote(audioCtx, 523.25, 0, 0.15);   // C5
+                playNote(audioCtx, 659.25, 0.15, 0.15); // E5
+                playNote(audioCtx, 783.99, 0.3, 0.15);  // G5
+                playNote(audioCtx, 1046.5, 0.45, 0.3);  // C6
+            } catch(e) {}
+        }
+
+        function playNote(ctx, freq, startTime, duration) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.1, ctx.currentTime + startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + startTime + duration);
+            osc.start(ctx.currentTime + startTime);
+            osc.stop(ctx.currentTime + startTime + duration);
+        }
+
+        // ---- Background Music (cute lo-fi melody) ----
+        let bgAudioCtx = null;
+        let bgMusicNodes = [];
+        let bgMusicInterval = null;
+
+        function startBgMusic() {
+            if (bgAudioCtx) return;
+            bgAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Cute melody notes (frequency, duration, delay offset in the loop)
+            const melody = [
+                // Bar 1
+                { f: 523.25, d: 0.25, t: 0 },     // C5
+                { f: 587.33, d: 0.25, t: 0.3 },    // D5
+                { f: 659.25, d: 0.4, t: 0.6 },     // E5
+                { f: 523.25, d: 0.2, t: 1.05 },    // C5
+                // Bar 2
+                { f: 698.46, d: 0.4, t: 1.5 },     // F5
+                { f: 659.25, d: 0.3, t: 1.95 },    // E5
+                { f: 587.33, d: 0.5, t: 2.3 },     // D5
+                // Bar 3
+                { f: 523.25, d: 0.25, t: 3.0 },    // C5
+                { f: 493.88, d: 0.25, t: 3.3 },    // B4
+                { f: 440.00, d: 0.4, t: 3.6 },     // A4
+                { f: 493.88, d: 0.3, t: 4.05 },    // B4
+                // Bar 4
+                { f: 523.25, d: 0.6, t: 4.5 },     // C5
+                { f: 392.00, d: 0.4, t: 5.2 },     // G4
+            ];
+
+            const loopDuration = 6.0; // seconds per loop
+
+            function playLoop() {
+                if (!bgAudioCtx) return;
+                const now = bgAudioCtx.currentTime;
+                melody.forEach(note => {
+                    const osc = bgAudioCtx.createOscillator();
+                    const gain = bgAudioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(bgAudioCtx.destination);
+                    osc.type = 'triangle';
+                    osc.frequency.value = note.f;
+                    gain.gain.setValueAtTime(0, now + note.t);
+                    gain.gain.linearRampToValueAtTime(0.06, now + note.t + 0.05);
+                    gain.gain.setValueAtTime(0.06, now + note.t + note.d * 0.7);
+                    gain.gain.linearRampToValueAtTime(0, now + note.t + note.d);
+                    osc.start(now + note.t);
+                    osc.stop(now + note.t + note.d + 0.05);
+                    bgMusicNodes.push(osc);
+                });
+            }
+
+            playLoop();
+            bgMusicInterval = setInterval(playLoop, loopDuration * 1000);
+        }
+
+        function stopBgMusic() {
+            if (bgMusicInterval) clearInterval(bgMusicInterval);
+            bgMusicNodes.forEach(n => { try { n.stop(); } catch(e) {} });
+            bgMusicNodes = [];
+            if (bgAudioCtx) { bgAudioCtx.close(); bgAudioCtx = null; }
+        }
+
+        // Start music on first user interaction
+        let musicStarted = false;
+        document.addEventListener('click', function() {
+            if (!musicStarted) {
+                musicStarted = true;
+                startBgMusic();
+            }
+        }, { once: false });
+
+        function launchConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#e91e63', '#ff5722', '#ff9800', '#ffeb3b', '#4caf50', '#2196f3', '#9c27b0', '#00bcd4'];
+            
+            for (let i = 0; i < 100; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDuration = (2 + Math.random() * 3) + 's';
+                piece.style.animationDelay = Math.random() * 2 + 's';
+                piece.style.width = (6 + Math.random() * 12) + 'px';
+                piece.style.height = (6 + Math.random() * 12) + 'px';
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                container.appendChild(piece);
+            }
+        }
+
+        function addFloatingHearts() {
+            const hearts = ['💕', '🌊', '🏖️', '✨', '🎉', '💖', '🌅', '⭐'];
+            for (let i = 0; i < 12; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 90 + 5 + '%';
+                heart.style.top = Math.random() * 80 + 10 + '%';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                heart.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+                document.body.appendChild(heart);
+            }
+        }
+
+        // Create background bubbles
+        function createBubbles() {
+            const container = document.getElementById('bubbles');
+            for (let i = 0; i < 15; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.width = (10 + Math.random() * 40) + 'px';
+                bubble.style.height = bubble.style.width;
+                bubble.style.animationDuration = (6 + Math.random() * 10) + 's';
+                bubble.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(bubble);
+            }
+        }
+
+        createBubbles();
+    </script>
+</body>
+</html>
